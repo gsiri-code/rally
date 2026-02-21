@@ -1,0 +1,13 @@
+[project]
+name = "ai-service"
+version = "0.1.0"
+description = "Workspace for travel planner services"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv.workspace]
+members = [
+    "src/rag",
+    "src/agent",
+]
