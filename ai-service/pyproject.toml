@@ -1,0 +1,22 @@
+[project]
+name = "ai-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "sirichartchai", email = "gs3802@nyu.edu" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "langchain>=1.2.10",
+    "langchain-nvidia-ai-endpoints>=1.0.4",
+    "python-dotenv>=1.2.1",
+    "qdrant-client>=1.17.0",
+]
+
+[project.scripts]
+ai-service = "ai_service:main"
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
