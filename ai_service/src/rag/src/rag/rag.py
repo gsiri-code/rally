@@ -10,6 +10,7 @@ from urllib.parse import urlsplit, urlunsplit
 from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
 from qdrant_client import QdrantClient, models
 
+from rag.rerank import RerankSettings, rerank_candidates
 from rag.retrieval import normalize_query_text
 
 DEFAULT_TOP_K = 40
@@ -24,6 +25,12 @@ class RagSettings:
     qdrant_api_key: str
     nvidia_api_key: str
     nvidia_model: str
+    rerank_enabled: bool
+    rerank_model: str
+    rerank_url: str
+    rerank_top_n: int
+    rerank_timeout_sec: float
+    rerank_max_attempts: int
 
 
 def _parse_iso_datetime(value: str | None) -> datetime | None:
@@ -59,6 +66,19 @@ def _load_settings() -> RagSettings:
     nvidia_model = os.getenv(
         "NVIDIA_EMBED_MODEL", "nvidia/llama-nemotron-embed-vl-1b-v2"
     )
+    rerank_enabled = os.getenv("RAG_RERANK_ENABLED", "true").lower() not in {
+        "0",
+        "false",
+        "no",
+        "off",
+    }
+    rerank_model = os.getenv("NVIDIA_RERANK_MODEL", "nvidia/nv-rerankqa-mistral-4b-v3")
+    rerank_url = os.getenv(
+        "NVIDIA_RERANK_URL", "https://integrate.api.nvidia.com/v1/retranking"
+    )
+    rerank_top_n = int(os.getenv("RAG_RERANK_TOP_N", "15"))
+    rerank_timeout_sec = float(os.getenv("RAG_RERANK_TIMEOUT_SEC", "15"))
+    rerank_max_attempts = int(os.getenv("RAG_RERANK_MAX_ATTEMPTS", "2"))
 
     if not qdrant_url or not qdrant_api_key:
         raise RuntimeError("Missing QDRANT_URL or QDRANT_API_KEY.")
@@ -70,6 +90,12 @@ def _load_settings() -> RagSettings:
         qdrant_api_key=qdrant_api_key,
         nvidia_api_key=nvidia_api_key,
         nvidia_model=nvidia_model,
+        rerank_enabled=rerank_enabled,
+        rerank_model=rerank_model,
+        rerank_url=rerank_url,
+        rerank_top_n=max(1, rerank_top_n),
+        rerank_timeout_sec=max(1.0, rerank_timeout_sec),
+        rerank_max_attempts=max(1, rerank_max_attempts),
     )
 
 
@@ -461,7 +487,42 @@ def rag_retrieve(
                 "source": payload.get("source"),
                 "confidence": payload.get("confidence"),
                 "published_at": payload.get("published_at"),
+                "vector_score": hit.score,
+                "rank_source": "vector",
             }
         )
 
-    return {"candidates": candidates, "count": len(candidates)}
+    rerank_applied = False
+    rerank_error: str | None = None
+    rerank_latency_ms: int | None = None
+    if settings.rerank_enabled and candidates:
+        rerank_settings = RerankSettings(
+            api_key=settings.nvidia_api_key,
+            model=settings.rerank_model,
+            endpoint_url=settings.rerank_url,
+            timeout_sec=settings.rerank_timeout_sec,
+            max_attempts=settings.rerank_max_attempts,
+        )
+        started = datetime.now(timezone.utc)
+        try:
+            candidates = rerank_candidates(
+                query_text=normalized_query,
+                candidates=candidates,
+                settings=rerank_settings,
+                top_n=min(settings.rerank_top_n, len(candidates)),
+            )
+            rerank_applied = True
+        except Exception as exc:  # noqa: BLE001
+            rerank_error = str(exc)
+        finally:
+            elapsed = datetime.now(timezone.utc) - started
+            rerank_latency_ms = int(elapsed.total_seconds() * 1000)
+
+    return {
+        "candidates": candidates,
+        "count": len(candidates),
+        "rerank_applied": rerank_applied,
+        "rerank_model": settings.rerank_model if settings.rerank_enabled else None,
+        "rerank_latency_ms": rerank_latency_ms,
+        "rerank_error": rerank_error,
+    }

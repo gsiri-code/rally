@@ -5,7 +5,11 @@ from types import SimpleNamespace
 
 from orchestrator_agent.contracts import ImageHint
 
-from web_agent.research import ClaudeResearchAgent, ClaudeResearchConfig
+from web_agent.research import (
+    EVIDENCE_SYSTEM_PROMPT,
+    ClaudeResearchAgent,
+    ClaudeResearchConfig,
+)
 
 
 class _FakeMessages:
@@ -46,6 +50,7 @@ def test_default_web_search_tool_is_20250305() -> None:
     _ = agent.gather_evidence(query_text="Paris", destination="Paris", constraints={})
     assert client.messages.calls
     assert client.messages.calls[0]["tools"][0]["type"] == "web_search_20250305"
+    assert client.messages.calls[0]["system"] == EVIDENCE_SYSTEM_PROMPT
 
 
 def test_gather_evidence_dedupes_urls_and_returns_contract_models() -> None:

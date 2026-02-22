@@ -50,6 +50,14 @@ from api.models import (
 )
 from api.repository import SearchRepository, TripRecord, TripRepository
 
+VOICE_INTENT_SYSTEM_PROMPT = (
+    "You are Rally Voice Intent, a deterministic parser for itinerary edit commands. "
+    "Classify the transcript into one action: skip, change, or none. "
+    "Only infer preferences that are explicitly stated or strongly implied. "
+    "If details are missing, use nulls rather than guessing. "
+    "Return strict JSON only with no markdown or explanation."
+)
+
 
 class OrchestratorRunner(Protocol):
     def run(self, request: PlanRequest) -> PlanResponse: ...
@@ -356,7 +364,7 @@ class TripPlanningService:
         payload = {
             "model": model,
             "messages": [
-                {"role": "system", "content": "You are a voice intent parser."},
+                {"role": "system", "content": VOICE_INTENT_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
             "response_format": {"type": "json_object"},

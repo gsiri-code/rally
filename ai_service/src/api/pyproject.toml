@@ -2,17 +2,30 @@
 name = "api"
 version = "0.1.0"
 description = "Trip planner API boundary for v1 routes"
-readme = "README.md"
 authors = [
     { name = "sirichartchai", email = "gs3802@nyu.edu" }
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "anthropic>=0.52.0",
     "fastapi>=0.116.1",
+    "models",
     "orchestrator-agent",
+    "python-multipart>=0.0.20",
     "pydantic>=2.11.9",
+    "qdrant-client>=1.15.1",
+    "transcription",
     "uvicorn>=0.35.0",
+    "warehouse-db",
+    "web-agent",
 ]
+
+[tool.uv.sources]
+models = { workspace = true }
+orchestrator-agent = { workspace = true }
+transcription = { workspace = true }
+warehouse-db = { workspace = true }
+web-agent = { workspace = true }
 
 [project.scripts]
 api = "api:main"

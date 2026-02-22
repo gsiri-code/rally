@@ -13,6 +13,14 @@ from planner_agent.errors import PlannerConfigurationError, PlannerGenerationErr
 
 NEMOTRON_MODEL_ID = "nvidia/nemotron-3-nano-30b-a3b:free"
 
+PLANNER_SYSTEM_PROMPT = (
+    "You are Rally Planner, a senior travel itinerary architect. "
+    "Your job is to build realistic multi-day travel plans from structured input. "
+    "Follow user constraints exactly when provided, keep day pacing practical, and avoid impossible transit jumps. "
+    "Ground recommendations in the provided candidates and evidence whenever possible. "
+    "Return strict JSON only, with no markdown or commentary."
+)
+
 
 @dataclass(frozen=True)
 class OpenRouterNemotronClient:
@@ -33,10 +41,6 @@ class OpenRouterNemotronClient:
         )
 
     def generate_outline(self, *, prompt_payload: dict[str, Any]) -> dict[str, Any]:
-        system_prompt = (
-            "You are a travel planner. Return JSON only, no markdown. "
-            "Build a complete itinerary with coherent pacing and realistic flow."
-        )
         user_prompt = (
             "Create itinerary JSON with this exact shape: "
             '{"destination": string|null, "days": [{"day_index": int, '
@@ -53,7 +57,7 @@ class OpenRouterNemotronClient:
         payload = {
             "model": NEMOTRON_MODEL_ID,
             "messages": [
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": PLANNER_SYSTEM_PROMPT},
                 {"role": "user", "content": user_prompt},
             ],
             "temperature": 0,

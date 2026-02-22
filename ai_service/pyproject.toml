@@ -12,4 +12,14 @@ members = [
     "src/planner_service",
     "src/transcription_service",
     "src/web_agent_service",
+    "src/transcription",
+    "src/web_agent",
+    "src/planner_agent",
+    "src/orchestrator_agent",
+    "src/api",
+    "src/warehouse_db",
+    "src/models",
 ]
+
+[tool.uv.sources]
+orchestrator-agent = { workspace = true }

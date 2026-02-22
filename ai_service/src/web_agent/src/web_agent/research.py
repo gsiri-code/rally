@@ -29,6 +29,21 @@ _DEFAULT_MAX_RETRIES = 3
 _DEFAULT_BACKOFF_BASE_SEC = 0.75
 _MAX_IMAGES_PER_SEGMENT = 3
 
+EVIDENCE_SYSTEM_PROMPT = (
+    "You are Rally Research, a travel intelligence analyst. "
+    "Use web search to collect factual, high-signal evidence for itinerary planning. "
+    "Prioritize primary and reputable sources, avoid low-trust aggregators when better sources exist, "
+    "and prefer current information. "
+    "Return strict JSON only with no markdown or extra prose."
+)
+
+IMAGES_SYSTEM_PROMPT = (
+    "You are Rally Imagery, a travel visual curator. "
+    "Use web search to find real, attributable travel images that match each itinerary segment. "
+    "Prioritize trustworthy hosts, relevance, and usable metadata. "
+    "Return strict JSON only with no markdown or extra prose."
+)
+
 _TRACKING_QUERY_PARAMS = {
     "gclid",
     "fbclid",
@@ -162,7 +177,9 @@ class ClaudeResearchAgent:
 
         try:
             payload = self._call_json_with_retry(
-                prompt=prompt, parser=_ClaudeEvidencePayload
+                prompt=prompt,
+                parser=_ClaudeEvidencePayload,
+                system_prompt=EVIDENCE_SYSTEM_PROMPT,
             )
         except Exception:
             return ResearchEvidenceResult(
@@ -236,6 +253,7 @@ class ClaudeResearchAgent:
                 payload = self._call_json_with_retry(
                     prompt=prompt,
                     parser=_ClaudeImagePayload,
+                    system_prompt=IMAGES_SYSTEM_PROMPT,
                 )
             except Exception:
                 images_by_segment[segment_id] = []
@@ -277,7 +295,13 @@ class ClaudeResearchAgent:
 
         return ResearchImagesResult(images_by_segment=images_by_segment)
 
-    def _call_json_with_retry(self, *, prompt: str, parser: type[TModel]) -> TModel:
+    def _call_json_with_retry(
+        self,
+        *,
+        prompt: str,
+        parser: type[TModel],
+        system_prompt: str,
+    ) -> TModel:
         last_exc: Exception | None = None
         for attempt in range(1, self.config.max_retries + 1):
             try:
@@ -285,6 +309,7 @@ class ClaudeResearchAgent:
                     model=self.config.model,
                     max_tokens=2400,
                     temperature=0,
+                    system=system_prompt,
                     tools=[
                         {
                             "type": self.config.web_search_tool,
