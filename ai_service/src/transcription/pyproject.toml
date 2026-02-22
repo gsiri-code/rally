@@ -1,0 +1,19 @@
+[project]
+name = "transcription"
+version = "0.1.0"
+description = "MP3 transcription tool"
+readme = "README.md"
+authors = [
+    { name = "sirichartchai", email = "gs3802@nyu.edu" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.28.1",
+]
+
+[project.scripts]
+transcription = "transcription:main"
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
