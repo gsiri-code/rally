@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
-from agent.schemas import Candidate, Citation, PlannerRequest, WebResult
+from planner_service.schemas import Candidate, Citation, PlannerRequest, WebResult
 
 
 class AgentPhase(str, Enum):

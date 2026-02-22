@@ -10,34 +10,11 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "agent",
     "ai-service",
+    "planner-service",
     "rag",
-]
-
-[[package]]
-name = "agent"
-version = "0.1.0"
-source = { editable = "src/agent" }
-dependencies = [
-    { name = "fastapi" },
-    { name = "httpx" },
-    { name = "langchain" },
-    { name = "pydantic" },
-    { name = "python-dotenv" },
-    { name = "rag" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "fastapi", specifier = ">=0.116.1" },
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "langchain", specifier = ">=1.2.10" },
-    { name = "pydantic", specifier = ">=2.11.7" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
-    { name = "rag", editable = "src/rag" },
-    { name = "uvicorn", specifier = ">=0.35.0" },
+    "transcription-service",
+    "web-agent-service",
 ]
 
 [[package]]
@@ -1041,6 +1018,31 @@ wheels = [
 ]
 
 [[package]]
+name = "planner-service"
+version = "0.1.0"
+source = { editable = "src/planner_service" }
+dependencies = [
+    { name = "fastapi" },
+    { name = "httpx" },
+    { name = "langchain" },
+    { name = "pydantic" },
+    { name = "python-dotenv" },
+    { name = "rag" },
+    { name = "uvicorn" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", specifier = ">=0.116.1" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "langchain", specifier = ">=1.2.10" },
+    { name = "pydantic", specifier = ">=2.11.7" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
+    { name = "rag", editable = "src/rag" },
+    { name = "uvicorn", specifier = ">=0.35.0" },
+]
+
+[[package]]
 name = "portalocker"
 version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1448,6 +1450,11 @@ wheels = [
 ]
 
 [[package]]
+name = "transcription-service"
+version = "0.1.0"
+source = { editable = "src/transcription_service" }
+
+[[package]]
 name = "typing-extensions"
 version = "4.15.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1518,6 +1525,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/32/ce/eeb58ae4ac36fe09e
 wheels = [
     { url = "https://files.pythonhosted.org/packages/83/e4/d04a086285c20886c0daad0e026f250869201013d18f81d9ff5eada73a88/uvicorn-0.41.0-py3-none-any.whl", hash = "sha256:29e35b1d2c36a04b9e180d4007ede3bcb32a85fbdfd6c6aeb3f26839de088187", size = 68783, upload-time = "2026-02-16T23:07:22.357Z" },
 ]
+
+[[package]]
+name = "web-agent-service"
+version = "0.1.0"
+source = { editable = "src/web_agent_service" }
 
 [[package]]
 name = "xxhash"

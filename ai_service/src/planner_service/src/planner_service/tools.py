@@ -9,8 +9,8 @@ from typing import Any
 import httpx
 from langchain_core.tools import StructuredTool
 
-from agent.config import AgentSettings
-from agent.schemas import Candidate, Citation, WebResult
+from planner_service.config import AgentSettings
+from planner_service.schemas import Candidate, Citation, WebResult
 
 
 def _import_rag_api() -> tuple[Any, Any]:

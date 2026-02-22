@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import re
 
-from agent.schemas import Candidate
+from planner_service.schemas import Candidate
 
 
 TIME_SENSITIVE_PATTERN = re.compile(

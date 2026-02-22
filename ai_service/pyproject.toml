@@ -9,5 +9,7 @@ dependencies = []
 [tool.uv.workspace]
 members = [
     "src/rag",
-    "src/agent",
+    "src/planner_service",
+    "src/transcription_service",
+    "src/web_agent_service",
 ]

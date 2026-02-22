@@ -1,5 +1,5 @@
 [project]
-name = "agent"
+name = "planner_service"
 version = "0.1.0"
 description = "Main travel planner orchestrator"
 readme = "README.md"
@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [project.scripts]
-agent = "agent.api:main"
+planner_service = "planner_service.api:main"
 
 [tool.uv.sources]
 rag = { workspace = true }
