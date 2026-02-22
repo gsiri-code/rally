@@ -1,0 +1,20 @@
+[project]
+name = "orchestrator-agent"
+version = "0.1.0"
+description = "LangGraph orchestrator for travel planning"
+readme = "README.md"
+authors = [
+    { name = "sirichartchai", email = "gs3802@nyu.edu" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.6.7",
+    "pydantic>=2.11.7",
+]
+
+[project.scripts]
+orchestrator-agent = "orchestrator_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.8.17,<0.9.0"]
+build-backend = "uv_build"
